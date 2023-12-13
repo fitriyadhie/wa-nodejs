@@ -1,3 +1,5 @@
+const qrcode = require('qrcode-terminal');
+
 const { Client } = require('whatsapp-web.js');
 
 const client = new Client();
@@ -5,6 +7,7 @@ const client = new Client();
 client.on('qr', (qr) => {
     // Generate and scan this code with your phone
     console.log('QR RECEIVED', qr);
+	qrcode.generate(qr, {small: true});
 });
 
 client.on('ready', () => {
@@ -22,7 +25,7 @@ client.initialize();
 
 const http = require('node:http');
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = 80;
 const server = http.createServer(async (req, res) => {
 	
 	try {
