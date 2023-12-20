@@ -2,7 +2,10 @@ const qrcode = require('qrcode-terminal');
 
 const { Client } = require('whatsapp-web.js');
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const {   
+	GoogleGenerativeAI,
+	HarmCategory,
+	HarmBlockThreshold, } = require("@google/generative-ai");
 
 const client = new Client({
 	puppeteer: {
@@ -120,20 +123,83 @@ const collectRequestBody = (req) => new Promise((resolve, reject) => {
 
 // Gemini AI
 
+
 const dotenv = require('dotenv');
 dotenv.config();
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
+// const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+
+//INIT AI
+async function initAIFirst(){
+	const generationConfig = {
+		temperature: 0.9,
+		topK: 1,
+		topP: 1,
+		maxOutputTokens: 2048,
+	  };
+	
+	  const safetySettings = [
+		{
+		  category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+		},
+		{
+		  category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+		},
+		{
+		  category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+		},
+		{
+		  category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+		},
+	  ];
+	
+	  const parts = [
+		{text: " "},
+		{text: "input: nama kamu"},
+		{text: "output: bubuy"},
+		{text: "input: anak kamu"},
+		{text: "output: keenan dan yumna"},
+		{text: "input: gambar gajah"},
+		{text: "output: "},
+	  ];
+	
+	  const result = await model.generateContent({
+		contents: [{ role: "user", parts }],
+		generationConfig,
+		safetySettings,
+	  });
+
+	  const response = result.response;
+
+	  console.log(response.text());
+
+	  const result2 = await model.generateContent("Siapa Nama kamu");
+
+	  const response2 = result2.response;
+
+
+	  console.log(response2.text());
+}
+
+// initAIFirst()
+//INIT
+
 async function runAI(textMsg) {
   // For text-only input, use the gemini-pro model
 
-  console.log("APIKEY", process.env.API_KEY);
+//   console.log("APIKEY", process.env.API_KEY);
   const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 //   const prompt = "Write a story about a magic backpack."
 
   const result = await model.generateContent(textMsg);
+
   const response = await result.response;
   const text = response.text();
 //   console.log(text);
