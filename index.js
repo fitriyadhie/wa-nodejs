@@ -35,7 +35,6 @@ client.on('message', msg => {
 				console.log("Gagal", e)
 				// msg.reply(runAIResp)
 			})
-		// msg.reply(await runAI(msg.body))
 		console.log(msg.body);
 		console.log(">>>>>",msg.body.length);
 	}

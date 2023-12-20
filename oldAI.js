@@ -129,10 +129,10 @@ dotenv.config();
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
-// const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 //INIT AI
-async function initAIFirst(){
+// async function initAIFirst(){
 	const generationConfig = {
 		temperature: 0.9,
 		topK: 1,
@@ -159,33 +159,23 @@ async function initAIFirst(){
 		},
 	  ];
 	
-	  const parts = [
+	  const greeting = [
 		{text: " "},
-		{text: "input: nama kamu"},
+		{text: "input: nama kamu adalah"},
 		{text: "output: bubuy"},
 		{text: "input: anak kamu"},
 		{text: "output: keenan dan yumna"},
-		{text: "input: gambar gajah"},
-		{text: "output: "},
+        {text: "input: pacar tepi adalah"},
+		{text: "output: masriah"},
 	  ];
 	
-	  const result = await model.generateContent({
-		contents: [{ role: "user", parts }],
-		generationConfig,
-		safetySettings,
-	  });
+	//   const result = await model.generateContent({
+	// 	contents: [{ role: "user", parts }],
+	// 	generationConfig,
+	// 	safetySettings,
+	//   });
 
-	  const response = result.response;
-
-	  console.log(response.text());
-
-	  const result2 = await model.generateContent("Siapa Nama kamu");
-
-	  const response2 = result2.response;
-
-
-	  console.log(response2.text());
-}
+// }
 
 // initAIFirst()
 //INIT
@@ -194,11 +184,23 @@ async function runAI(textMsg) {
   // For text-only input, use the gemini-pro model
 
 //   console.log("APIKEY", process.env.API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+//   const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 //   const prompt = "Write a story about a magic backpack."
 
-  const result = await model.generateContent(textMsg);
+// yg biasa
+//   const result = await model.generateContent(textMsg);
+    const parts = [...greeting]
+    let input = { text: "input: "+ textMsg }; 
+    let output = { text: "output :"};
+    parts.push(input)
+    parts.push(output) 
+    console.log(parts)
+    const result = await model.generateContent({
+        contents: [{ role: "user", parts }],
+        generationConfig,
+        safetySettings,
+    });
 
   const response = await result.response;
   const text = response.text();
