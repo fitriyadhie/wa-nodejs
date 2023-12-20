@@ -24,9 +24,39 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+
+	let keywords = "IQRO";
+	const keyword = msg.body.split(":");
+
     if (msg.body == '!ping') {
         msg.reply('pong');
-    }else if(msg.body.length < 200) {
+    }
+	// else if(msg.body.length < 200) {
+	// 	console.log("Pesan ", msg.body)
+	// 	const runAIResp = runAI(msg.body);
+	// 	runAIResp
+	// 		.then((value)=> {
+	// 			console.log("Okee")
+	// 			console.log(value)
+	// 			msg.reply(value)
+	// 		})
+	// 		.catch((e)=> {
+	// 			console.log("Gagal", e)
+	// 			// msg.reply(runAIResp)
+	// 		})
+	// 	// msg.reply(await runAI(msg.body))
+	// 	console.log(msg.body);
+	// 	console.log(">>>>>",msg.body.length);
+	// }
+	else if(keyword[0] == keywords){
+		console.log("belajar ap gan")
+
+		let input = { text: "input: "+ keyword[1] }; 
+		let output = { text: "output :"+ keyword[2]};
+		greeting.push(input)
+		greeting.push(output) 
+
+	}else {
 		console.log("Pesan ", msg.body)
 		const runAIResp = runAI(msg.body);
 		runAIResp
@@ -130,7 +160,7 @@ dotenv.config();
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
-const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+// const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 //INIT AI
 // async function initAIFirst(){
@@ -184,8 +214,8 @@ const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 async function runAI(textMsg) {
   // For text-only input, use the gemini-pro model
 
-//   console.log("APIKEY", process.env.API_KEY);
-//   const model = genAI.getGenerativeModel({ model: "gemini-pro"});
+  console.log("APIKEY", process.env.API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
 //   const prompt = "Write a story about a magic backpack."
 
