@@ -2,7 +2,7 @@ const qrcode = require('qrcode-terminal');
 
 const { Client } = require('whatsapp-web.js');
 
-const https = require('https');
+const fetch = require('node-fetch');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -30,29 +30,24 @@ client.on('message', msg => {
     }
 	
 	const getPost = (msg) => {
-		  const urlAi = process.env.API_AI+msg.body
-			console.log("urlAI", urlAi)
-		  https.get(urlAi, (resp) => {
-			let data = '';
-		  
-			// A chunk of data has been received.
-			resp.on('data', (chunk) => {
-			  data += chunk;
-			});
-		  
-			// The whole response has been received. Print out the result.
-			resp.on('end', () => {
-			//   console.log(JSON.parse(data).explanation);
-			  console.log(data);
-			  msg.reply(data);
-			});
-		  
-		  }).on("error", (err) => {
-			console.log("Error: " + err.message);
+		fetch(process.env.API_AI+`/${msg.body}`)
+		  .then(response => response.text())
+		  .then(body => {
+			// console.log(body)
+			msg.reply(body);
 		  });
 	};
 	  
-	getPost(msg);
+	try {
+		getPost(msg);
+	} catch (error) {
+		if (error instanceof SyntaxError) {
+		// Unexpected token < in JSON
+		console.log('There was a SyntaxError', error);
+		} else {
+		console.log('There was an error', error);
+		}
+	}
 });
 
 client.initialize();
