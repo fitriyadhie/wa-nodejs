@@ -43,8 +43,13 @@ client.on('message', msg => {
 			// The whole response has been received. Print out the result.
 			resp.on('end', () => {
 			//   console.log(JSON.parse(data).explanation);
-			  console.log(data);
-			  msg.reply(data);
+			  if(data.length > 1){
+				msg.reply(data);
+			  }else{
+				console.log(msg.body);
+			  }
+			  
+			  
 			});
 		  
 		  }).on("error", (err) => {
