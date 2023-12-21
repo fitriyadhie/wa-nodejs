@@ -2,10 +2,8 @@ const qrcode = require('qrcode-terminal');
 
 const { Client } = require('whatsapp-web.js');
 
-const {   
-	GoogleGenerativeAI,
-	HarmCategory,
-	HarmBlockThreshold, } = require("@google/generative-ai");
+const dotenv = require('dotenv');
+dotenv.config();
 
 const client = new Client({
 	puppeteer: {
@@ -25,54 +23,20 @@ client.on('ready', () => {
 
 client.on('message', msg => {
 
-	let keywords = "IQRO";
-	const keyword = msg.body.split(":");
-
     if (msg.body == '!ping') {
         msg.reply('pong');
     }
-	// else if(msg.body.length < 200) {
-	// 	console.log("Pesan ", msg.body)
-	// 	const runAIResp = runAI(msg.body);
-	// 	runAIResp
-	// 		.then((value)=> {
-	// 			console.log("Okee")
-	// 			console.log(value)
-	// 			msg.reply(value)
-	// 		})
-	// 		.catch((e)=> {
-	// 			console.log("Gagal", e)
-	// 			// msg.reply(runAIResp)
-	// 		})
-	// 	// msg.reply(await runAI(msg.body))
-	// 	console.log(msg.body);
-	// 	console.log(">>>>>",msg.body.length);
-	// }
-	else if(keyword[0] == keywords){
-		console.log("belajar ap gan")
-
-		let input = { text: "input: "+ keyword[1] }; 
-		let output = { text: "output :"+ keyword[2]};
-		greeting.push(input)
-		greeting.push(output) 
-
-	}else {
-		console.log("Pesan ", msg.body)
-		const runAIResp = runAI(msg.body);
-		runAIResp
-			.then((value)=> {
-				console.log("Okee")
-				console.log(value)
-				msg.reply(value)
-			})
-			.catch((e)=> {
-				console.log("Gagal", e)
-				// msg.reply(runAIResp)
-			})
-		// msg.reply(await runAI(msg.body))
-		console.log(msg.body);
-		console.log(">>>>>",msg.body.length);
-	}
+	
+	const getPost = (msg) => {
+		fetch(process.env.API_AI+`/${msg.body}`)
+		  .then(response => response.text())
+		  .then(body => {
+			// console.log(body)
+			msg.reply(body);
+		  });
+	};
+	  
+	getPost(msg);
 });
 
 client.initialize();
@@ -111,25 +75,6 @@ const server = http.createServer(async (req, res) => {
 		res.writeHead(400, { 'Content-Type': 'text/plain' });
 		res.end('Bad Request');
 	  }
-	// const data = req.body;
-	
-	// console.log(req.body, "req.body");
-  
-	// const number = data.number;
-	// const sanitized_number = number.toString().replace(/[- )(]/g, ""); // remove unnecessary chars from the number
-	// const final_number = `91${sanitized_number.substring(sanitized_number.length - 10)}`; // add 91 before the number here 91 is country code of India
-
-	// const number_details = await client.getNumberId(final_number); // get mobile number details
-
-	// if (number_details) {
-	// 	const sendMessageData = await client.sendMessage(number_details._serialized, data.msg); // send message
-	// } else {
-	// 	console.log(final_number, "Mobile number is not registered");
-	// }
-	//   res.statusCode = 200;
-	//   res.setHeader('Content-Type', 'text/plain');
-	  
-	//   res.end('Okee\n');
 });
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
@@ -151,92 +96,3 @@ const collectRequestBody = (req) => new Promise((resolve, reject) => {
 	  reject(error);
 	});
   });
-
-// Gemini AI
-
-
-const dotenv = require('dotenv');
-dotenv.config();
-// Access your API key as an environment variable (see "Set up your API key" above)
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-
-// const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-
-//INIT AI
-// async function initAIFirst(){
-	const generationConfig = {
-		temperature: 0.9,
-		topK: 1,
-		topP: 1,
-		maxOutputTokens: 2048,
-	  };
-	
-	  const safetySettings = [
-		{
-		  category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-		},
-		{
-		  category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-		},
-		{
-		  category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-		},
-		{
-		  category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-		  threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-		},
-	  ];
-	
-	  const greeting = [
-		{text: " "},
-		{text: "input: nama kamu adalah"},
-		{text: "output: bubuy"},
-		{text: "input: anak kamu"},
-		{text: "output: keenan dan yumna"},
-        {text: "input: pacar tepi adalah"},
-		{text: "output: masriah"},
-	  ];
-	
-	//   const result = await model.generateContent({
-	// 	contents: [{ role: "user", parts }],
-	// 	generationConfig,
-	// 	safetySettings,
-	//   });
-
-// }
-
-// initAIFirst()
-//INIT
-
-async function runAI(textMsg) {
-  // For text-only input, use the gemini-pro model
-
-  console.log("APIKEY", process.env.API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-pro"});
-
-//   const prompt = "Write a story about a magic backpack."
-
-// yg biasa
-//   const result = await model.generateContent(textMsg);
-    const parts = [...greeting]
-    let input = { text: "input: "+ textMsg }; 
-    let output = { text: "output :"};
-    parts.push(input)
-    parts.push(output) 
-    console.log(parts)
-    const result = await model.generateContent({
-        contents: [{ role: "user", parts }],
-        generationConfig,
-        safetySettings,
-    });
-
-  const response = await result.response;
-  const text = response.text();
-//   console.log(text);
-  return text
-}
-
-// runAI("test");
